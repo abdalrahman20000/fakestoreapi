@@ -17,12 +17,16 @@
 
     </main>
     <section class="post">
+        <div id="product_added">
+
+        </div>
         <form action="" id="form">
             <h3><label for="title">Title <input type="text" id="title"></label></h3>
             <h3><label for="price">Price <input type="text" id="price"></label></h3>
             <h3><label for="desc">Description<input type="text" id="desc"></label></h3>
             <h3><label for="u_img">URL image<input type="text" id="u_img"></label></h3>
-            <h3><label for="" class="btn"><input type="submit" id="submit"></label></h3>
+            <h3><label for="" class="btn"><button id="insert">Add</button><button id="update">Update</button><button
+                        id="remove">Remove</button> </label></h3>
         </form>
     </section>
     <footer>
@@ -35,30 +39,115 @@
 
     <!-- <script src="https://cdnjs.cloudflare.com/ajax/libs/firebase/7.14.1-0/firebase.js"></script> -->
     <script src="app.js"></script>
-    <!-- <script type="module">
+    <script type="module">
+
         // Import the functions you need from the SDKs you need
         import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js";
         import { getAnalytics } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-analytics.js";
+        import { getDatabase, get, set, ref, remove, update, child } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-database.js";
         // TODO: Add SDKs for Firebase products that you want to use
         // https://firebase.google.com/docs/web/setup#available-libraries
 
         // Your web app's Firebase configuration
         // For Firebase JS SDK v7.20.0 and later, measurementId is optional
         const firebaseConfig = {
-            apiKey: "AIzaSyBZN8lqWJBfSWWZ5TrP8Kzwhd023Um8SBY",
-            authDomain: "rest-59d45.firebaseapp.com",
-            databaseURL: "https://rest-59d45-default-rtdb.europe-west1.firebasedatabase.app",
-            projectId: "rest-59d45",
-            storageBucket: "rest-59d45.appspot.com",
-            messagingSenderId: "7083150876",
-            appId: "1:7083150876:web:a95063d1f5978904bfd9d9",
-            measurementId: "G-ZC5QEQ048W"
+            apiKey: "AIzaSyA0KZY-NmDgR3fO5j8nX5ZzDJ-WisjIOMM",
+            authDomain: "products-test-78384.firebaseapp.com",
+            projectId: "products-test-78384",
+            storageBucket: "products-test-78384.appspot.com",
+            messagingSenderId: "714663739997",
+            appId: "1:714663739997:web:aaf5416b968bc4b7de03b4",
+            measurementId: "G-8DFDSW6SH7",
+            databaseURL: "https://products-test-78384-default-rtdb.europe-west1.firebasedatabase.app"
         };
 
         // Initialize Firebase
         const app = initializeApp(firebaseConfig);
         const analytics = getAnalytics(app);
-    </script> -->
+
+
+        const db = getDatabase(app);
+
+        var title_input = document.getElementById("title").value;
+        var price_input = document.getElementById("price").value;
+        var desc_input = document.getElementById("desc").value;
+        var image_input = document.getElementById("u_img").value;
+
+        var insert_btn = document.getElementById("insert");
+        var update_btn = document.getElementById("update");
+        var remove_btn = document.getElementById("remove");
+
+
+
+        function insert_date(e) {
+
+            e.preventDefault();
+
+            const db_ref = ref(db);
+
+
+            set(ref(db, "Products/" + document.getElementById("title").value), {
+                title: document.getElementById("title").value,
+                price: document.getElementById("price").value,
+                description: document.getElementById("desc").value,
+                image_url: document.getElementById("u_img").value
+            })
+                .then(
+                    get(child(db_ref, "Products/" + document.getElementById("title").value))
+                        .then((stored_data) => {
+                            const main_s = document.querySelector("main");
+                            const card = document.createElement("div");
+                            card.classList.add("card");
+
+                            card.innerHTML = `
+                                <img src="${stored_data.val().image_url}" alt="">
+                                <div> 
+                                <h3>${stored_data.val().title}</h3>
+                                <p>$${stored_data.val().price}</p>
+                                <p>${stored_data.val().description}</p>
+                                </div>
+                                `;
+
+
+                            card.style.width = "300px";
+
+                            main_s.appendChild(card);
+                        })
+                )
+                .catch((error) => { alert(error); });
+        }
+
+        function update_date(e) {
+            e.preventDefault();
+
+            update(ref(db, "Products/" + document.getElementById("title").value), {
+                title: document.getElementById("title").value,
+                price: document.getElementById("price").value,
+                description: document.getElementById("desc").value,
+                image_url: document.getElementById("u_img").value
+            })
+                .then(() => { alert("The data update successfully!!!"); })
+                .catch((error) => { alert(error); });
+        }
+
+        function remove_date(e) {
+            e.preventDefault();
+
+            remove(ref(db, "Products/" + document.getElementById("title").value))
+                .then(() => { alert("The data removed successfully!!!"); })
+                .catch((error) => { alert(error); });
+        }
+
+        insert_btn.addEventListener("click", insert_date);
+        update_btn.addEventListener("click", update_date);
+        remove_btn.addEventListener("click", remove_date);
+
+
+
+
+
+
+    </script>
 </body>
 
 </html>
